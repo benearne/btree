@@ -71,10 +71,38 @@ class Tree {
 		}
 		return arr;
 	}
+
+	insert(value, root = this.root) {
+		if (root === null) {
+			return new Node(value);
+		}
+
+		// Duplicates not allowed
+		if (root.data === value) {
+			return root;
+		}
+
+		if (value < root.data) {
+			root.left = this.insert(value, root.left);
+		} else if (value > root.data) {
+			root.right = this.insert(value, root.right)
+		}
+
+		return root;
+	}
+
+	insertValue(value) {
+		this.root = this.insert(value, this.root);
+	}
+
+
 }
 
 const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const tree = new Tree(arr);
 
 
+prettyPrint(tree.root)
+
+tree.insertValue(77);
 prettyPrint(tree.root)
