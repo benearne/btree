@@ -15,12 +15,8 @@ class Tree {
 	}
 
 	buildTree(arr) {
-		// Turns the array into a balanced binary tree full od NODE objects
-		// dont forget to sort and remove duplicates
-		// return the level-0 root node
-
 		// sort + remove dublicates
-		const array = this.removeDublicates(this.mergeSort(arr));
+		const array = this._removeDublicates(this._mergeSort(arr));
 
 		// basecase
 		if (array.length == 0) {
@@ -39,7 +35,7 @@ class Tree {
 		return root; 
 	}
 
-	mergeSort(arr) {
+	_mergeSort(arr) {
 		if (arr.length <= 1) {
 			return arr;
 		}
@@ -47,13 +43,13 @@ class Tree {
 		const middle = Math.floor((arr.length) / 2);
 
 		// teile und sortiere
-		const left = this.mergeSort(arr.slice(0, middle));
-		const right = this.mergeSort(arr.slice(middle));
+		const left = this._mergeSort(arr.slice(0, middle));
+		const right = this._mergeSort(arr.slice(middle));
 
-		return this.merge(left, right);
+		return this._merge(left, right);
 	}
 
-	merge(left, right) {
+	_merge(left, right) {
 		const result = [];
 		while (left.length && right.length) {
 			if (left[0] < right[0]) result.push(left.shift());
@@ -62,7 +58,7 @@ class Tree {
 		return result.concat(left, right);
 	}
 
-	removeDublicates(arr) {
+	_removeDublicates(arr) {
 		for (let i = 0; i < arr.length - 1; i++) {
 			if (arr[i] == arr[i + 1]) {
 				arr.splice(i, 1);
@@ -72,7 +68,7 @@ class Tree {
 		return arr;
 	}
 
-	insert(value, root = this.root) {
+	_insert(value, root = this.root) {
 		if (root === null) {
 			return new Node(value);
 		}
@@ -83,26 +79,93 @@ class Tree {
 		}
 
 		if (value < root.data) {
-			root.left = this.insert(value, root.left);
+			root.left = this._insert(value, root.left);
 		} else if (value > root.data) {
-			root.right = this.insert(value, root.right)
+			root.right = this._insert(value, root.right)
 		}
 
 		return root;
 	}
 
 	insertValue(value) {
-		this.root = this.insert(value, this.root);
+		this.root = this._insert(value, this.root);
 	}
 
+	_delete(value, root = this.root) {
+		if (root === null) return root;
 
+		if (value < root.data) {
+			root.left = this._delete(value, root.left);
+		} else if (value > root.data) {
+			root.right = this._delete(value, root.right);
+		} else {
+			// kein Kind
+			if (!root.left && !root.right) return null;
+
+			// 1 Kind
+			if (!root.left) return root.right;
+			if (!root.right) return root.left;
+
+			// 2 Kinder
+			// kleinster Wert im rechten Teilbaum
+			let successor = root.right;
+			while (successor.left !== null) {
+				successor = successor.left;
+			}
+			root.data = successor.data;
+			root.right = this._delete(successor.data, root.right);
+		}
+
+		return root;
+	}
+
+	deleteItem(value) {
+		this.root = this._delete(value, this.root);
+	}
+
+	find(value) {
+		let current = this.root;
+		while(current !== null) {
+			if (current.data === value) {
+				return current;
+			} else if (value < current.data) {
+				current = current.left;
+			} else {
+				current = current.right;
+			}
+		}
+		return null;
+	}
+
+	levelOrder(callback) {
+		if (!callback) {
+			throw new Error("No callback function provided");
+		}
+
+		if (!this.root) return;
+
+		// Root in queue
+		const queue = [this.root];
+
+		// As long as queue != empty:
+		while (queue.length > 0) {
+			// take first item -> current
+			const node = queue.shift();
+			// callback on current
+			callback(node);
+			// put is child at the end
+			if (node.left) queue.push(node.left);
+			if (node.right) queue.push(node.right);
+		}
+	}
 }
 
 const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const tree = new Tree(arr);
 
+function show(node) {
+	console.log(node.data);
+}
 
 prettyPrint(tree.root)
-
-tree.insertValue(77);
-prettyPrint(tree.root)
+tree.levelOrder(show);
