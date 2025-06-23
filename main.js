@@ -149,14 +149,61 @@ class Tree {
 
 		// As long as queue != empty:
 		while (queue.length > 0) {
-			// take first item -> current
+			// take first item -> node
 			const node = queue.shift();
-			// callback on current
+			// callback on node
 			callback(node);
 			// put is child at the end
 			if (node.left) queue.push(node.left);
 			if (node.right) queue.push(node.right);
 		}
+	}
+
+	inOrder(callback, root = this.root) {
+		if (!callback) {
+			throw new Error("No callback function provided");
+		}
+		
+		// base case
+		if (!root) return;
+
+		// read left
+		this.inOrder(callback, root.left);
+		// read root
+		callback(root);
+		// read right
+		this.inOrder(callback, root.right);
+	}
+
+	preOrder(callback, root = this.root) {
+		if (!callback) {
+			throw new Error("No callback function provided");
+		}
+		
+		// base case
+		if (!root) return;
+
+		// read root
+		callback(root);
+		// read left
+		this.preOrder(callback, root.left);
+		// read right
+		this.preOrder(callback, root.right);
+	}
+
+	postOrder(callback, root = this.root) {
+		if (!callback) {
+			throw new Error("No callback function provided");
+		}
+		// base case
+		if (!root) return;
+
+		// read left
+		this.postOrder(callback, root.left)
+		// read right
+		this.postOrder(callback, root.right)
+		// read root
+		callback(root);
 	}
 }
 
@@ -168,4 +215,4 @@ function show(node) {
 }
 
 prettyPrint(tree.root)
-tree.levelOrder(show);
+tree.postOrder(show);
