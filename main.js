@@ -205,6 +205,23 @@ class Tree {
 		// read root
 		callback(root);
 	}
+
+	_heightCounter(node, count = 0) {
+		if (node === null) return -1;
+
+		const leftHeight = this._heightCounter(node.left);
+		const rightHeight = this._heightCounter(node.right);
+
+		return 1 + Math.max(leftHeight, rightHeight);
+	}
+
+	height(value) {
+		// search whole tree for value
+		const found = this.find(value);
+		if (found) return this._heightCounter(found);
+		// if not found return null
+		return null
+	}
 }
 
 const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
@@ -215,4 +232,4 @@ function show(node) {
 }
 
 prettyPrint(tree.root)
-tree.postOrder(show);
+console.log(tree.height(8));
