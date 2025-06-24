@@ -206,7 +206,7 @@ class Tree {
 		callback(root);
 	}
 
-	_heightCounter(node, count = 0) {
+	_heightCounter(node) {
 		if (node === null) return -1;
 
 		const leftHeight = this._heightCounter(node.left);
@@ -222,14 +222,106 @@ class Tree {
 		// if not found return null
 		return null
 	}
+
+	depth(value) {
+		let current = this.root;
+		let level = 0;
+		while(current !== null) {
+			if (current.data === value) {
+				return level;
+			} else if (value < current.data) {
+				current = current.left;
+				level++;
+			} else {
+				current = current.right;
+				level++;
+			}
+		}
+		return null;
+	}
+
+	isBalanced(node = this.root) {
+		if (node === null) {
+			return true;
+		}
+		let leftHeight = this._heightCounter(node.left);
+		let rightHeight = this._heightCounter(node.right);
+
+		if (Math.abs(leftHeight - rightHeight) > 1) {;
+			return false;
+		}
+
+		return this.isBalanced(node.left) && this.isBalanced(node.right);
+	}
+
+	rebalance() {
+		if (this.isBalanced()) {
+			console.log("Tree was already balanced")
+			return
+		};
+		const newArray = [];
+
+		this.inOrder(node => newArray.push(node.data));
+		this.root = this.buildTree(newArray);
+		console.log("Successfully rebalanced!")
+	}
 }
 
-const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-const tree = new Tree(arr);
 
-function show(node) {
-	console.log(node.data);
+// Create a binary search tree from an array of random numbers < 100. 
+// You can create a function that returns an array of random numbers every time you call it if you wish.
+
+function createTree(length) {
+	const arr = [];
+	for (let i = 0; i < length; i++) {
+		arr[i] = Math.floor(Math.random() * 100);
+	}
+	const tree = new Tree(arr);
+	prettyPrint(tree.root);
+	return tree;
 }
 
-prettyPrint(tree.root)
-console.log(tree.height(8));
+const myTree = createTree(7);
+
+// Confirm that the tree is balanced by calling isBalanced.
+myTree.isBalanced();
+
+// Print out all elements in level, pre, post, and in order.
+console.log("LEVEL")
+myTree.levelOrder(node => console.log(node.data));
+
+console.log("PREORDER")
+myTree.preOrder(node => console.log(node.data));
+
+console.log("POSTORDER")
+myTree.postOrder(node => console.log(node.data));
+
+console.log("INORDER")
+myTree.inOrder(node => console.log(node.data));
+
+// Unbalance the tree by adding several numbers > 100.
+myTree.insertValue(Math.floor(100+ Math.random() * 100))
+myTree.insertValue(Math.floor(100+ Math.random() * 100))
+myTree.insertValue(Math.floor(100+ Math.random() * 100))
+
+// Confirm that the tree is unbalanced by calling isBalanced.
+console.log("Balanced:", myTree.isBalanced());
+
+// Balance the tree by calling rebalance.
+myTree.rebalance();
+
+// Confirm that the tree is balanced by calling isBalanced.
+console.log("Balanced:", myTree.isBalanced());
+
+// Print out all elements in level, pre, post, and in order.
+console.log("LEVEL")
+myTree.levelOrder(node => console.log(node.data));
+
+console.log("PREORDER")
+myTree.preOrder(node => console.log(node.data));
+
+console.log("POSTORDER")
+myTree.postOrder(node => console.log(node.data));
+
+console.log("INORDER")
+myTree.inOrder(node => console.log(node.data));
